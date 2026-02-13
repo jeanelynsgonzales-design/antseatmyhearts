@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Catch my heart, wabsy 🥰</title>
+<style>
+body {
+  margin:0;
+  background-color:#ffe6f0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  height:100vh;
+  font-family:'Arial',sans-serif;
+  overflow:hidden;
+  text-align:center;
+  position:relative;
+}
+h1 { font-size:3rem; color:#ff3366; animation:fadeIn 2s ease-in; }
+p { font-size:1.5rem; max-width:450px; color:#ff66a3; animation:fadeIn 3s ease-in; }
+#score { position:fixed; top:10px; right:20px; font-size:1.2rem; color:#ff3366; font-weight:bold; }
+.heart { position:absolute; font-size:2rem; cursor:pointer; user-select:none; animation:float 5s linear infinite; transform-origin:center; }
+.sparkle { position:absolute; font-size:1rem; opacity:0.5; user-select:none; animation:sparkleFloat linear infinite; }
+.background-heart { position:absolute; font-size:50px; opacity:0.1; pointer-events:none; z-index:-1; animation:drift linear infinite; }
+@keyframes float { 0%{transform:translateY(0) rotate(0deg);opacity:1;} 100%{transform:translateY(-700px) rotate(360deg);opacity:0;} }
+@keyframes sparkleFloat {0%{transform:translateY(0) rotate(0deg);opacity:0.5;}100%{transform:translateY(-800px) rotate(360deg);opacity:0;} }
+@keyframes drift {0%{transform:translateY(100vh) translateX(0) rotate(0deg);}50%{transform:translateY(50vh) translateX(20px) rotate(180deg);}100%{transform:translateY(-100vh) translateX(-20px) rotate(360deg);} }
+@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+@keyframes bounce { 0%{transform:scale(1);}50%{transform:scale(1.5);}100%{transform:scale(0);} }
+.confetti { position:absolute; width:10px; height:10px; opacity:0.9; pointer-events:none; }
+#restartBtn { display:none; margin-top:20px; padding:12px 25px; font-size:1rem; border-radius:20px; border:none; background-color:#ff99cc; cursor:pointer; transition: transform 0.2s, background-color 0.3s; }
+#restartBtn:hover { transform:scale(1.1); background-color:#ff66a3; }
+#startOverlay { position:fixed; top:0; left:0; width:100vw; height:100vh; background-color:#ffe6f0; display:flex; justify-content:center; align-items:center; flex-direction:column; z-index:1000; cursor:pointer; }
+</style>
+</head>
+<body>
+
+<div id="startOverlay"><h2>Click anywhere to start 💖</h2></div>
+<h1>Catch my heart, wabsy 🥰</h1>
+<p>Pop 34 hearts 🩷 to win my love 💖</p>
+<div id="score">Hearts caught: 0 / 34</div>
+<button id="restartBtn">Restart Game 💌</button>
+
+<!-- Local audio files -->
+<audio id="popSound" src="pop.mp3"></audio>
+<audio id="romanticSong" src="romantic-piano.mp3" loop></audio>
+
+<script>
+const totalHeartsToPop = 34;
+let poppedCount = 0;
+const scoreEl = document.getElementById('score');
+const romanticSong = document.getElementById('romanticSong');
+const restartBtn = document.getElementById('restartBtn');
+const startOverlay = document.getElementById('startOverlay');
+
+// Unlock audio on first click
+startOverlay.addEventListener('click', () => {
+  romanticSong.play().then(()=>{romanticSong.pause(); romanticSong.currentTime=0;}).catch(()=>{});
+  startOverlay.style.display='none';
+});
+
+// Sparkles
+function createSparkle(){ const sparkle=document.createElement('div'); sparkle.className='sparkle'; sparkle.innerText='💫'; sparkle.style.left=Math.random()*100+'vw'; sparkle.style.top=Math.random()*100+'vh'; sparkle.style.fontSize=(10+Math.random()*10)+'px'; sparkle.style.animationDuration=(5+Math.random()*5)+'s'; document.body.appendChild(sparkle); setTimeout(()=>sparkle.remove(),10000);}
+setInterval(createSparkle,500);
+
+// Background drifting hearts
+function createBackgroundHeart(){ const heart=document.createElement('div'); heart.className='background-heart'; heart.innerText='❤️'; heart.style.left=Math.random()*100+'vw'; heart.style.fontSize=(30+Math.random()*50)+'px'; heart.style.animationDuration=(15+Math.random()*10)+'s'; document.body.appendChild(heart); setTimeout(()=>heart.remove(),30000);}
+for(let i=0;i<5;i++) createBackgroundHeart();
+setInterval(createBackgroundHeart,3000);
+
+// Clickable hearts
+function createHeart(){
+  const heart=document.createElement('div'); heart.className='heart'; heart.innerText='🩷'; heart.style.left=Math.random()*90+'vw'; heart.style.top=Math.random()*80+'vh'; heart.style.fontSize=(30+Math.random()*20)+'px'; heart.style.animationDuration=(3+Math.random()*3)+'s'; document.body.appendChild(heart);
+
+  heart.addEventListener('click',()=>{
+    poppedCount++;
+    scoreEl.innerText=`Hearts caught: ${poppedCount} / ${totalHeartsToPop}`;
+    const popSound = document.getElementById('popSound'); popSound.currentTime=0; popSound.play();
+    heart.style.animation='bounce 0.5s forwards'; setTimeout(()=>heart.remove(),500);
+
+    if(poppedCount===totalHeartsToPop){
+      romanticSong.play();
+      triggerConfetti();
+      setTimeout(()=>alert(`My dearest Wawabs ❤️
+
+Alam mo ba, sobra akong proud sa’yo? Parang sabi nga ni Kafka, a philosopher, we don’t deserve to hold back our full potential, kaya lumabas ka sa mundo nang buong tapang at ipakita mo kung gaano ka kagaling. Life will throw twists and turns, parang kay Newton na hindi laging linear ang growth, pero alam mo, mas lalo lang nitong pinapaganda ang journey mo. That’s what makes you even more special. 🤍
+
+Lift your head high. Give justice to your younger self wabsy, and always remember na maraming nagmamahal sa’yo. Mahal na mahal kita, at sana laging gabayan tayo ng Diyos sa lahat ng bagay. 💛🤗🌟`),500);
+      restartBtn.style.display='inline-block';
+    }
+  });
+}
+
+// Initial hearts
+for(let i=0;i<10;i++) createHeart();
+setInterval(createHeart,2000);
+
+// Confetti
+function triggerConfetti(){
+  const colors=['#ff3366','#ff66a3','#ff99cc','#ffe6f0','#ffb3d9'];
+  for(let i=0;i<50;i++){
+    const confetti=document.createElement('div'); confetti.className='confetti';
+    confetti.style.left=(50+Math.random()*20-10)+'vw'; confetti.style.top='50vh';
+    confetti.style.backgroundColor=colors[Math.floor(Math.random()*colors.length)];
+    document.body.appendChild(confetti);
+    confetti.animate([{transform:`translateY(0) rotate(${Math.random()*360}deg)`},{transform:`translateY(500px) rotate(${Math.random()*720}deg)`,opacity:0}],{duration:2000+Math.random()*1000,easing:'ease-out',fill:'forwards'});
+    setTimeout(()=>confetti.remove(),3000);
+  }
+}
+
+// Restart
+restartBtn.addEventListener('click',()=>{
+  poppedCount=0; scoreEl.innerText=`Hearts caught: 0 / ${totalHeartsToPop}`;
+  restartBtn.style.display='none'; romanticSong.pause(); romanticSong.currentTime=0;
+  document.querySelectorAll('.heart').forEach(h=>h.remove());
+  for(let i=0;i<10;i++) createHeart();
+});
+</script>
+</body>
+</html>
